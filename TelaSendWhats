@@ -1,0 +1,47 @@
+from PySimpleGUI import PySimpleGUI as sg
+from pywhatkit import pywhatkit
+from datetime import datetime
+import keyboard
+import time
+
+
+
+class TelaPy:
+    def __init__(self):
+        #layout
+        radio_choices = ['WhatsApp', 'Gmail']
+
+        layout = [
+            [sg.Text('Contatos:',size = (10,0)),sg.Input(size = (15,0), key='contatos')],
+            [sg.Text('Mensagem:',size = (10,0)),sg.Input(size = (25,0), key='msg')],
+            [sg.Text('Métodos de envio:',size = (15,0))],
+            [sg.Radio(text , 1, key='sendMethod') for text in radio_choices],
+            [sg.Text()],
+            [sg.Button('Enviar')],
+            [sg.Text()],
+            [sg.Text('Instruções:')],
+            [sg.Text('Contatos:"+55(CodÁrea)(Numero)" e sempre separados por uma virgula","')],
+            [sg.Text('Necessário whats esteja conectado no navegador padrão')]
+        ]
+        #janela
+        self.janela = sg.Window("Enviador do paih").layout(layout)
+        # Extrair dados
+        
+
+    def Iniciar(self):
+        self.button, self.values = self.janela.Read()
+        msg = self.values['msg']
+        contatos = self.values['contatos']
+        contato = contatos.split(",")
+        #print(msg)
+        #enviador de msgs
+        time.sleep(20)
+        while len(contatos) >= 1:
+            # enviar mensagens
+            pywhatkit.sendwhatmsg(contato[0],msg, datetime.now().hour, datetime.now().minute + 2)
+            del contato[0]
+            time.sleep(60)
+            keyboard.press_and_release('ctrl + w')
+
+tela = TelaPy()
+tela.Iniciar()
