@@ -1,0 +1,72 @@
+# -*- coding: utf-8 -*-
+
+
+import requests
+import json
+import os
+
+#token = '1578125460:AAG9Bil7B5aounO7ImUiiT5p6SLJ0qal8bY'
+#url_base = f'api.telegram.org/bot{token}/'
+
+
+class TelegramBot:
+    def __init__(self):
+        token = '1578125460:AAG9Bil7B5aounO7ImUiiT5p6SLJ0qal8bY'
+        self.url_base = f'https://api.telegram.org/bot{token}/'
+   #PrinFunc
+    def print(self):
+        print(self.url_base)
+  
+        #initBot
+    def Iniciar(self):
+        update_id = None
+        while True:
+            atualizacao = self.obter_msgs(update_id)
+            msgs = atualizacao['result']
+            if msgs:
+                for msg in msgs:
+                    update_id = msg['update_id']
+                    chat_id = msg['message']['from']['id']
+                    eh_primeira_menssagem = msg['message']['message_id'] == 1
+                    resposta = self.criar_resp(msg, eh_primeira_menssagem)
+                    self.responder(resposta, chat_id)
+
+        #getMsg
+    def obter_msgs(self, update_id):
+        link_resq = f'{self.url_base}getUpdates?timeout=100'
+        if update_id:
+            link_resq = f'{link_resq}&offset={update_id + 1}'
+        resultado = requests.get(link_resq)
+        return json.loads(resultado.content)
+        #createResp
+    def criar_resp(self, msg, eh_primeira_menssagem):
+        msg = msg['message']['text']
+        if eh_primeira_menssagem == True or msg.lower() == 'menu' or msg.lower() == 'oi':
+            return f'''Bem vindo ao BotGaa, digite a opção desejada:{os.linesep}{os.linesep}1 - Consultar Prod{os.linesep}2 - Consultar Pedido
+          '''
+            #os.linesep}3 - Dados RCA
+        if msg == '1':
+            return f'Digite o código do produto:'
+            #confirmar para pesquisar (s/n)'
+        if msg == '2':
+            return f'Digite o número do pedido{os.linesep}' #confirmar dados (s/n)'
+        #if msg == '3':
+        #  return f'Digite o código do representante:{os.linesep} confirmar # dados (s/n)'
+        if msg.lower() in ('s', 'sim'):
+            return 'solicitação confirmada!'
+
+        
+        else:
+            'Voltar ao menu inicial. Digite "menu".'
+        #resp
+    def responder(self, resposta, chat_id):
+        #enviar
+        link_de_envio = f'{self.url_base}sendMessage?chat_id={chat_id}&text={resposta}'
+        requests.get(link_de_envio)
+
+
+
+
+bot = TelegramBot()
+bot.Iniciar()
+#bot.print()
