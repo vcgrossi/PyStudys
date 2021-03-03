@@ -1,0 +1,66 @@
+#by_c0st1nh4 03-03-21
+# -*- coding: utf-8 -*-
+from selenium import webdriver
+import time
+from selenium.webdriver.common.by import By
+from os import listdir
+from os.path import isfile, join
+import os
+import shutil
+
+class favotecimentoSP:
+	
+	def __init__(self):
+		pass
+	def download(self):
+		options = webdriver.ChromeOptions()
+		options.add_argument('lang=pt-br')
+		self.driver = webdriver.Chrome(
+                executable_path=r'./chromedriver', chrome_options=options)
+		self.driver.get('http://dados.prefeitura.sp.gov.br/pt_PT/dataset/transferencia-de-recursos-da-uniao-a-cidade-de-sao-paulo')
+		time.sleep(3)
+		i = 1
+
+		#Digito apos o <= define o loop de downloads de arquivos;
+		while (i <= 88): 		
+			self.driver.find_element_by_xpath('//*[@id="dataset-resources"]/ul/li['+str(i)+']/div/a/span').click()
+			self.driver.find_element_by_xpath('//*[@id="dataset-resources"]/ul/li['+str(i)+']/div/ul/li[2]/a').click()
+			i = i + 2
+		else:
+			self.driver.close
+			print("Baixado todos dados") 
+
+	def plan(self):
+
+		diretorio = '/home/vitor/Downloads/'
+		ficheiros = [f for f in listdir(diretorio) if (isfile(join(diretorio, f)) and f.endswith('.csv')) ]
+		
+		for f in ficheiros:
+		    arq = '/home/vitor/Downloads/' + f
+		    shutil.move(arq,'/home/vitor/Área de Trabalho/Desktop/projetos/Python Ou Travessuras/baixaDados')
+
+		# Diretorio
+		self.diretorio='/home/vitor/Área de Trabalho/Desktop/projetos/Python Ou Travessuras/baixaDados'
+
+		# Recupera lista de ficheiros CSV em um diretorio
+		self.ficheiros = [f for f in listdir(diretorio) if (isfile(join(diretorio, f)) and f.endswith('.csv')) ]
+
+		# Abre ficheiro de saida...
+		saida = open( "saida.csv", "a" )
+		
+		for f in ficheiros:
+		    csv = open(f , encoding="utf8", errors='ignore')
+		    student = 1
+
+		    for linha in csv:
+		         linha = linha.rstrip() + ';' + str(student) + '\n';
+		         saida.write(linha)
+
+		#csv.close()
+		#saida.close()
+
+
+bot = favotecimentoSP()
+bot.download()
+bot.plan()
+
