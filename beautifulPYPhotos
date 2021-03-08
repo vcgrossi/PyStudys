@@ -1,0 +1,56 @@
+from os import link
+import requests
+import json
+#import wget
+
+class Photo:
+    
+    def __init__(self):
+        pass
+
+    def image(self):    
+
+        nameb = []
+        n = 0
+        while n <= 6: 
+            newImage = str(n) + ".jpg"
+            #print(type(newImage),'',newImage)
+            self.pwd = "/home/xixicoco/Área de Trabalho/photoFamilly/"+newImage
+            #print(self.pwd)
+            Photo.beatiful(self.pwd)
+            nameb.append(newImage)
+            n = n + 1
+        print(nameb)
+           
+
+    def color(link):
+        r = requests.post(
+        "https://api.deepai.org/api/colorizer",
+        data={
+            'image': link,
+        },
+        headers={'api-key': 'xixicocoxixicocoxixicoco'}
+        )
+        c = r.json()
+        b = c['output_url']
+        print(b+'\n')
+        wget.download(b)
+        
+
+    def beatiful(pwd):
+
+        r = requests.post(
+        "https://api.deepai.org/api/torch-srgan",
+        files={
+            'image': open(pwd, 'rb'),
+        },
+        headers={'api-key': 'xixicocoxixicocoxixicoco'}
+        )
+        c = r.json()
+        link = c['output_url']
+        print(link+'\n')
+        #wget.download(link)
+        Photo.color(link)
+
+s = Photo()
+s.image()
