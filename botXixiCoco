@@ -5,7 +5,7 @@ import requests
 import json
 import os
 
-#token = '1578125460:AAG9Bil7B5aounO7ImUiiT5p6SLJ0qal8bY'
+#token = '----'
 #url_base = f'api.telegram.org/bot{token}/'
 
 
