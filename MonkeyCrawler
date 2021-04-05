@@ -1,0 +1,45 @@
+#!/usr/bin/python
+# -*- coding: ascii -*-
+# encoding=utf8
+import requests
+from bs4 import BeautifulSoup
+import psycopg2
+
+#connect to DB
+conn_string = "host='SECRET' port='SECRET' dbname='SECRET' user='SECRET' password='SECRET'"
+conn = psycopg2.connect(conn_string)
+cur = conn.cursor()
+
+page = requests.get('SECRET')
+soup = BeautifulSoup(page.text, 'html.parser')
+
+cotacoes_list = soup.find(class_='SECRET')
+cotacoes_list_items = cotacoes_list.find_all('td')
+i=0
+li = []
+listao = []
+#print(cotacoes_list_items)
+for cotacoes in cotacoes_list_items:
+   names = cotacoes.contents[0]
+   li.append(names.replace(" ",""))
+   i = i +1
+   if i % 5 == 0:
+      listao.append(li)      
+      i = 0
+      li = []
+      #break
+for linha in listao:
+    if linha[2] == "-" or linha[3] == "-":
+       pass
+    else:
+        l0 = linha[0]
+        l1 = linha[1]
+        l2 = linha[2]
+        l3 = linha[3]
+        l4 = linha[4]
+        
+        #cur.execute("INSERT INTO bovespa (descr, cod, ultimovl, variacao,fechamento) VALUES('"+l0+"','"+l1+"',"+l2.replace(",",".")+","+l3.replace(",",".").replace("%","")+","+l4.replace(",",".")+");")
+        #print("UPDATE bovespa SET ultimovl="+l2.replace(",",".")+",variacao="+l3.replace(",",".").replace("%","")+",fechamento="+l4.replace(",",".")+" WHERE cod = '"+l0+"';")
+        cur.execute("UPDATE bovespa SET ultimovl="+l2.replace(",",".")+",variacao="+l3.replace(",",".").replace("%","")+",fechamento="+l4.replace(",",".")+", dateup = '"+str(dt_object)+"' WHERE cod = '"+l1+"';")
+        conn.commit()
+
